@@ -1,1 +1,108 @@
 
+@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+
+class Usuario {
+  - id: int
+  - nome: string
+  - email: string
+  - senha: string
+  + autenticar()
+}
+
+class Cliente {
+  - telefone: string
+  + atualizarCadastro()
+  + consultarPedidos()
+}
+
+class Administrador {
+  + gerenciarProdutos()
+  + gerenciarPedidos()
+  + consultarRelatorios()
+}
+
+class Produto {
+  - id: int
+  - nome: string
+  - descricao: string
+  - preco: decimal
+  - ativo: boolean
+  + cadastrar()
+  + atualizar()
+}
+
+class Categoria {
+  - id: int
+  - nome: string
+  - descricao: string
+}
+
+class Estoque {
+  - id: int
+  - quantidade: int
+  + atualizarQuantidade()
+  + verificarDisponibilidade()
+}
+
+class Carrinho {
+  - id: int
+  + adicionarProduto()
+  + removerProduto()
+  + calcularTotal()
+}
+
+class ItemCarrinho {
+  - quantidade: int
+  - precoUnitario: decimal
+  + calcularSubtotal()
+}
+
+class Pedido {
+  - id: int
+  - data: date
+  - status: string
+  - valorTotal: decimal
+  + finalizar()
+  + atualizarStatus()
+}
+
+class ItemPedido {
+  - quantidade: int
+  - precoUnitario: decimal
+  + calcularSubtotal()
+}
+
+class Endereco {
+  - id: int
+  - rua: string
+  - numero: string
+  - bairro: string
+  - cidade: string
+  - cep: string
+}
+
+Usuario <|-- Cliente
+Usuario <|-- Administrador
+
+Cliente "1" -- "0..*" Endereco
+Cliente "1" -- "0..1" Carrinho
+Cliente "1" -- "0..*" Pedido
+
+Categoria "1" -- "0..*" Produto
+Produto "1" -- "1" Estoque
+
+Carrinho "1" -- "0..*" ItemCarrinho
+ItemCarrinho "*" -- "1" Produto
+
+Pedido "1" -- "1..*" ItemPedido
+ItemPedido "*" -- "1" Produto
+Pedido "*" -- "1" Endereco
+
+Administrador ..> Produto
+Administrador ..> Estoque
+Administrador ..> Pedido
+
+@enduml
+
