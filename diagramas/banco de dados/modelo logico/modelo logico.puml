@@ -1,1 +1,103 @@
 
+@startuml
+title CUPCAKE STORE - MODELO LOGICO DO BANCO DE DADOS
+
+hide circle
+skinparam linetype ortho
+
+entity "USUARIO" as USUARIO {
+  * id_usuario : INT <<PK>>
+  --
+  nome : VARCHAR(100)
+  email : VARCHAR(150)
+  senha : VARCHAR(255)
+  tipo_usuario : VARCHAR(30)
+}
+
+entity "ENDERECO" as ENDERECO {
+  * id_endereco : INT <<PK>>
+  --
+  id_usuario : INT <<FK>>
+  rua : VARCHAR(150)
+  numero : VARCHAR(20)
+  bairro : VARCHAR(100)
+  cidade : VARCHAR(100)
+  cep : VARCHAR(10)
+}
+
+entity "PEDIDO" as PEDIDO {
+  * id_pedido : INT <<PK>>
+  --
+  id_usuario : INT <<FK>>
+  id_endereco : INT <<FK>>
+  data_pedido : DATETIME
+  status : VARCHAR(30)
+  valor_total : DECIMAL(10,2)
+}
+
+entity "CARRINHO" as CARRINHO {
+  * id_carrinho : INT <<PK>>
+  --
+  id_usuario : INT <<FK>>
+  data_criacao : DATETIME
+}
+
+entity "ITEM_CARRINHO" as ITEM_CARRINHO {
+  * id_item_carrinho : INT <<PK>>
+  --
+  id_carrinho : INT <<FK>>
+  id_produto : INT <<FK>>
+  quantidade : INT
+  preco_unitario : DECIMAL(10,2)
+}
+
+entity "CATEGORIA" as CATEGORIA {
+  * id_categoria : INT <<PK>>
+  --
+  nome : VARCHAR(100)
+  descricao : TEXT
+}
+
+entity "PRODUTO" as PRODUTO {
+  * id_produto : INT <<PK>>
+  --
+  id_categoria : INT <<FK>>
+  nome : VARCHAR(100)
+  descricao : TEXT
+  preco : DECIMAL(10,2)
+  ativo : BOOLEAN
+}
+
+entity "ESTOQUE" as ESTOQUE {
+  * id_estoque : INT <<PK>>
+  --
+  id_produto : INT <<FK>>
+  quantidade : INT
+}
+
+entity "ITEM_PEDIDO" as ITEM_PEDIDO {
+  * id_item_pedido : INT <<PK>>
+  --
+  id_pedido : INT <<FK>>
+  id_produto : INT <<FK>>
+  quantidade : INT
+  preco_unitario : DECIMAL(10,2)
+}
+
+USUARIO ||--o{ ENDERECO : possui
+USUARIO ||--o{ PEDIDO : realiza
+USUARIO ||--o| CARRINHO : utiliza
+
+ENDERECO ||--o{ PEDIDO : recebe
+
+CARRINHO ||--o{ ITEM_CARRINHO : contem
+PRODUTO ||--o{ ITEM_CARRINHO : aparece
+
+CATEGORIA ||--o{ PRODUTO : classifica
+PRODUTO ||--o| ESTOQUE : possui
+
+PEDIDO ||--|{ ITEM_PEDIDO : contem
+PRODUTO ||--o{ ITEM_PEDIDO : compoe
+
+@enduml
+
