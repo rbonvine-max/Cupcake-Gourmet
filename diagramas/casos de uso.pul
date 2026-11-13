@@ -1,1 +1,58 @@
 
+@startuml
+left to right direction
+
+actor Visitante
+actor Cliente
+actor Administrador
+
+rectangle "CUPCAKE STORE" {
+
+  usecase "Visualizar catálogo" as UC01
+  usecase "Pesquisar produtos" as UC02
+  usecase "Cadastrar-se" as UC03
+
+  usecase "Autenticar-se" as UC04
+  usecase "Atualizar cadastro" as UC05
+  usecase "Adicionar produtos ao carrinho" as UC06
+  usecase "Alterar carrinho" as UC07
+  usecase "Consultar valor total" as UC08
+  usecase "Finalizar pedido" as UC09
+  usecase "Informar endereço" as UC10
+  usecase "Consultar histórico de pedidos" as UC11
+  usecase "Acompanhar pedido" as UC12
+
+  usecase "Gerenciar produtos" as UC13
+  usecase "Gerenciar categorias e sabores" as UC14
+  usecase "Gerenciar estoque" as UC15
+  usecase "Gerenciar pedidos" as UC16
+  usecase "Consultar clientes" as UC17
+  usecase "Gerar relatórios" as UC18
+}
+
+Visitante --> UC01
+Visitante --> UC02
+Visitante --> UC03
+
+Cliente --> UC04
+Cliente --> UC05
+Cliente --> UC01
+Cliente --> UC02
+Cliente --> UC06
+Cliente --> UC07
+Cliente --> UC08
+Cliente --> UC09
+Cliente --> UC10
+Cliente --> UC11
+Cliente --> UC12
+
+Administrador --> UC04
+Administrador --> UC13
+Administrador --> UC14
+Administrador --> UC15
+Administrador --> UC16
+Administrador --> UC17
+Administrador --> UC18
+
+@enduml
+
