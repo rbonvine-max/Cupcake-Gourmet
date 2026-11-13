@@ -1,1 +1,42 @@
 
+@startuml
+title CUPCAKE STORE - DIAGRAMA DE SEQUENCIA
+
+actor Cliente
+participant "Catalogo" as Catalogo
+participant "Carrinho" as Carrinho
+participant "Sistema de Pedidos" as Sistema
+participant "Estoque" as Estoque
+participant "Banco de Dados" as Banco
+
+Cliente -> Catalogo: Visualizar produtos
+Catalogo -> Banco: Consultar produtos
+Banco --> Catalogo: Retornar catalogo
+Catalogo --> Cliente: Exibir produtos
+
+Cliente -> Catalogo: Selecionar cupcake
+Cliente -> Carrinho: Adicionar produto
+Carrinho -> Carrinho: Calcular total
+Carrinho --> Cliente: Exibir total
+
+Cliente -> Sistema: Finalizar pedido
+Sistema -> Estoque: Verificar disponibilidade
+Estoque -> Banco: Consultar quantidade
+Banco --> Estoque: Retornar quantidade
+Estoque --> Sistema: Confirmar disponibilidade
+
+alt Produto disponível
+    Sistema --> Cliente: Solicitar endereço
+    Cliente -> Sistema: Informar endereço
+    Sistema -> Banco: Registrar pedido
+    Banco --> Sistema: Confirmar registro
+    Sistema -> Estoque: Atualizar quantidade
+    Estoque -> Banco: Salvar estoque atualizado
+    Banco --> Estoque: Confirmar atualização
+    Sistema --> Cliente: Confirmar compra
+else Produto indisponível
+    Sistema --> Cliente: Informar indisponibilidade
+end
+
+@enduml
+
