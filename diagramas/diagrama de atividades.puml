@@ -1,1 +1,54 @@
 
+@startuml
+title CUPCAKE STORE - DIAGRAMA DE ATIVIDADES
+
+|Cliente|
+start
+:Acessar a loja virtual;
+
+|Sistema|
+:Exibir catálogo de cupcakes;
+
+|Cliente|
+:Visualizar produtos;
+:Selecionar cupcake;
+:Adicionar produto ao carrinho;
+
+|Sistema|
+:Atualizar carrinho;
+:Calcular valor total;
+
+|Cliente|
+:Solicitar finalização da compra;
+
+|Sistema|
+:Verificar disponibilidade dos produtos;
+
+if (Produtos disponíveis?) then (Sim)
+
+  |Cliente|
+  :Informar endereço de entrega;
+
+  |Sistema|
+  :Registrar pedido;
+  :Atualizar estoque;
+  :Gerar confirmação da compra;
+
+  |Cliente|
+  :Visualizar confirmação do pedido;
+
+  stop
+
+else (Não)
+
+  :Informar indisponibilidade;
+
+  |Cliente|
+  :Revisar carrinho;
+
+  stop
+
+endif
+
+@enduml
+
