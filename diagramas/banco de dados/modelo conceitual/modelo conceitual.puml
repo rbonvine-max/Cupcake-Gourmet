@@ -1,1 +1,92 @@
 
+@startuml
+title CUPCAKE STORE - MODELO CONCEITUAL DO BANCO DE DADOS
+
+hide circle
+skinparam linetype ortho
+
+entity "USUARIO" as Usuario {
+  * id_usuario
+  --
+  nome
+  email
+  senha
+  tipo_usuario
+}
+
+entity "ENDERECO" as Endereco {
+  * id_endereco
+  --
+  rua
+  numero
+  bairro
+  cidade
+  cep
+}
+
+entity "CATEGORIA" as Categoria {
+  * id_categoria
+  --
+  nome
+  descricao
+}
+
+entity "PRODUTO" as Produto {
+  * id_produto
+  --
+  nome
+  descricao
+  preco
+  ativo
+}
+
+entity "ESTOQUE" as Estoque {
+  * id_estoque
+  --
+  quantidade
+}
+
+entity "CARRINHO" as Carrinho {
+  * id_carrinho
+  --
+  data_criacao
+}
+
+entity "ITEM_CARRINHO" as ItemCarrinho {
+  * id_item_carrinho
+  --
+  quantidade
+  preco_unitario
+}
+
+entity "PEDIDO" as Pedido {
+  * id_pedido
+  --
+  data_pedido
+  status
+  valor_total
+}
+
+entity "ITEM_PEDIDO" as ItemPedido {
+  * id_item_pedido
+  --
+  quantidade
+  preco_unitario
+}
+
+Usuario ||--o{ Endereco : possui
+Usuario ||--o| Carrinho : utiliza
+Usuario ||--o{ Pedido : realiza
+
+Categoria ||--o{ Produto : classifica
+Produto ||--|| Estoque : possui
+
+Carrinho ||--o{ ItemCarrinho : contem
+Produto ||--o{ ItemCarrinho : aparece
+
+Pedido ||--|{ ItemPedido : contem
+Produto ||--o{ ItemPedido : compoe
+Endereco ||--o{ Pedido : recebe
+
+@enduml
+
