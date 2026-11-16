@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação do Pedido | Cupcake Store</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #fffaf7; color: #49332e; }
+        header { background: #8e4b55; color: white; padding: 25px; text-align: center; }
+        
+        .container {
+            max-width: 700px; margin: 40px auto; background: white; padding: 35px;
+            border-radius: 12px; box-shadow: 0 3px 15px #00000015;
+        }
+        h2 { color: #8e4b55; margin-bottom: 20px; border-bottom: 2px solid #f5dce0; padding-bottom: 10px; }
+        h3 { color: #713b43; margin: 20px 0 10px; }
+        
+        .dados-cliente {
+            background: #fce9e5; padding: 18px; border-radius: 8px; line-height: 1.7;
+        }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f5dce0; }
+        th { background: #f5dce0; color: #713b43; }
+        .direita { text-align: right; }
+        
+        .total-final {
+            text-align: right; font-size: 22px; font-weight: bold;
+            color: #8e4b55; margin-top: 20px;
+        }
 
+        .acoes {
+            display: flex; justify-content: space-between; gap: 15px; margin-top: 30px;
+        }
+        .btn-voltar {
+            background: #e0c3c8; color: #49332e; border: none; padding: 14px 20px;
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+            text-decoration: none; text-align: center; flex: 1;
+        }
+        .btn-confirmar {
+            background: #2e7d32; color: white; border: none; padding: 14px 20px;
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; flex: 2;
+        }
+        .btn-confirmar:hover { background: #1b5e20; }
+
+        .sucesso-box {
+            display: none; text-align: center; padding: 30px 10px;
+        }
+        .sucesso-box h2 { border: none; color: #2e7d32; font-size: 28px; }
+        .protocolo {
+            background: #e8f5e9; color: #1b5e20; padding: 12px; border-radius: 8px;
+            font-weight: bold; font-size: 18px; margin: 20px 0; display: inline-block;
+        }
+
+        footer { background: #8e4b55; color: white; padding: 25px; text-align: center; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🧁 Cupcake Store</h1>
+    <p>Revisão e Confirmação do Pedido</p>
+</header>
+
+<div class="container">
+    <div id="area-revisao">
+        <h2>Resumo do Seu Pedido</h2>
+
+        <h3>📋 Dados do Cliente</h3>
+        <div class="dados-cliente" id="info-cliente"></div>
+
+        <h3>🧁 Produtos Escolhidos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Qtd</th>
+                    <th class="direita">Unitário</th>
+                    <th class="direita">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="lista-produtos"></tbody>
+        </table>
+
+        <div class="total-final" id="valor-final"></div>
+
+        <div class="acoes">
+            <a href="index.html" class="btn-voltar">← Alterar Pedido</a>
+            <button type="button" class="btn-confirmar" onclick="confirmarCompra()">✔ Confirmar Compra</button>
+        </div>
+    </div>
+
+    <div id="area-sucesso" class="sucesso-box">
+        <h2>🎉 Pedido Confirmado com Sucesso!</h2>
+        <p>Obrigado pela preferência, <strong id="nome-sucesso"></strong>!</p>
+        <div class="protocolo" id="numero-protocolo"></div>
+        <p>Seus cupcakes já entraram em preparo e serão enviados para o endereço informado.</p>
+        <br><br>
+        <a href="index.html" class="btn-voltar" onclick="localStorage.removeItem('pedidoCupcake')">Fazer Novo Pedido</a>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 Cupcake Store</p>
+    <p>Projeto Integrador - Engenharia de Software</p>
+</footer>
+
+<script>
+    const pedidoSalvo = JSON.parse(localStorage.getItem('pedidoCupcake'));
+
+    if (!pedidoSalvo) {
+        alert("Nenhum pedido encontrado. Redirecionando para a loja...");
+        window.location.href = 'index.html';
+    } else {
+        document.getElementById('info-cliente').innerHTML = `
+            <p><strong>Nome:</strong> ${pedidoSalvo.cliente.nome}</p>
+            <p><strong>Telefone:</strong> ${pedidoSalvo.cliente.telefone}</p>
+            <p><strong>Endereço:</strong> ${pedidoSalvo.cliente.endereco}</p>
+            <p><strong>Forma de Pagamento:</strong> ${pedidoSalvo.cliente.pagamento}</p>
+            <p><strong>Data/Hora:</strong> ${pedidoSalvo.data}</p>
+        `;
+
+        const tbody = document.getElementById('lista-produtos');
+        pedidoSalvo.itens.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.nome}</td>
+                <td>${item.quantidade}</td>
+                <td class="direita">R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
+                <td class="direita">R$ ${item.subtotal.toFixed(2).replace('.', ',')}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('valor-final').innerText = 
+            `Total a Pagar: R$ ${pedidoSalvo.total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function confirmarCompra() {
+        const protocolo = 'CUP-' + Math.floor(100000 + Math.random() * 900000);
+        pedidoSalvo.protocolo = protocolo;
+        pedidoSalvo.status = 'CONFIRMADO';
+
+        fetch('/salvar-pedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pedidoSalvo)
+        })
+        .then(response => response.json())
+        .then(data => console.log("Servidor:", data))
+        .catch(error => console.warn("Modo demonstração local:", error))
+        .finally(() => {
+            document.getElementById('nome-sucesso').innerText = pedidoSalvo.cliente.nome;
+            document.getElementById('numero-protocolo').innerText = `Protocolo do Pedido: #${protocolo}`;
+            document.getElementById('area-revisao').style.display = 'none';
+            document.getElementById('area-sucesso').style.display = 'block';
+        });
+    }
+</script>
+
+</body>
+</html>
