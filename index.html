@@ -191,7 +191,40 @@ style="width:100%; height:180px; object-fit:cover; border-radius:12px;">
     <h2>Identificação do Cliente</h2>
 
     <form id="formCliente" onsubmit="event.preventDefault(); continuarCompra();">
+        function continuarCompra() {
+    if (carrinho.length === 0) {
+        alert("Adicione pelo menos um produto ao carrinho!");
+        return;
+    }
 
+    const cliente = {
+        nome: document.getElementById("nomeCliente").value.trim(),
+        email: document.getElementById("emailCliente").value.trim(),
+        telefone: document.getElementById("telefoneCliente").value.trim(),
+        rua: document.getElementById("ruaCliente").value.trim(),
+        numero: document.getElementById("numeroCliente").value.trim(),
+        bairro: document.getElementById("bairroCliente").value.trim(),
+        cep: document.getElementById("cepCliente").value.trim()
+    };
+
+    if (Object.values(cliente).some(valor => !valor)) {
+        alert("Preencha todos os campos do cadastro!");
+        return;
+    }
+
+    const totalGeral = carrinho.reduce((soma, item) => soma + (item.preco * item.quantidade), 0);
+
+    const pedido = {
+        cliente: cliente,
+        itens: carrinho,
+        total: totalGeral,
+        data: new Date().toLocaleString('pt-BR')
+    };
+
+    // Salva os dados no navegador e vai para a página de confirmação
+    localStorage.setItem("pedidoCupcake", JSON.stringify(pedido));
+    window.location.href = "confirmacao.html";
+}
         <label for="nomeCliente">Nome completo:</label>
         <input type="text" id="nomeCliente"
                placeholder="Digite seu nome completo" required>
