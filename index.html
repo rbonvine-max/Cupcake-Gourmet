@@ -375,7 +375,7 @@ function continuarCompra() {
 }
     </script>
     
-    if (carrinho.length === 0) {
+if (carrinho.length === 0) {
         alert("Adicione pelo menos um produto ao carrinho!");
         return;
     }
@@ -395,11 +395,18 @@ function continuarCompra() {
         return;
     }
 
-    window.clienteCadastrado = cliente;
+    const totalGeral = carrinho.reduce((soma, item) => soma + (item.preco * item.quantidade), 0);
 
-    alert("Cadastro realizado com sucesso! Vamos preparar seu pedido.");
+    const pedido = {
+        cliente: cliente,
+        itens: carrinho,
+        total: totalGeral,
+        data: new Date().toLocaleString('pt-BR')
+    };
+
+    localStorage.setItem("pedidoCupcake", JSON.stringify(pedido));
+    window.location.href = "confirmacao.html";
 }
-        
 </script>
 </body>
 </html>
