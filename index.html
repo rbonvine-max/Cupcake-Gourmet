@@ -338,7 +338,6 @@ function removerDoCarrinho(nome) {
     carrinho = carrinho.filter(item => item.nome !== nome);
     atualizarCarrinho();
 }
-
 function continuarCompra() {
     if (carrinho.length === 0) {
         alert("Adicione pelo menos um produto ao carrinho!");
@@ -372,6 +371,7 @@ function continuarCompra() {
     localStorage.setItem("pedidoCupcake", JSON.stringify(pedido));
     window.location.href = "confirmacao.html";
 }
+
     </script>
     
 if (carrinho.length === 0) {
