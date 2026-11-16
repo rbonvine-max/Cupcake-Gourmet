@@ -67,7 +67,7 @@
     <div id="area-revisao">
         <h2>Resumo do Seu Pedido</h2>
 
-        <h3>📋 Dados do Cliente</h3>
+        <h3>📋 Dados do Cliente e Entrega</h3>
         <div class="dados-cliente" id="info-cliente"></div>
 
         <h3>🧁 Produtos Escolhidos</h3>
@@ -86,7 +86,7 @@
         <div class="total-final" id="valor-final"></div>
 
         <div class="acoes">
-            <a href="index.html" class="btn-voltar">← Alterar Pedido</a>
+            <a href="index.html" class="btn-voltar">← Voltar e Alterar</a>
             <button type="button" class="btn-confirmar" onclick="confirmarCompra()">✔ Confirmar Compra</button>
         </div>
     </div>
@@ -95,7 +95,7 @@
         <h2>🎉 Pedido Confirmado com Sucesso!</h2>
         <p>Obrigado pela preferência, <strong id="nome-sucesso"></strong>!</p>
         <div class="protocolo" id="numero-protocolo"></div>
-        <p>Seus cupcakes já entraram em preparo e serão enviados para o endereço informado.</p>
+        <p>Seus cupcakes já entraram em preparo e serão enviados para o endereço cadastrado.</p>
         <br><br>
         <a href="index.html" class="btn-voltar" onclick="localStorage.removeItem('pedidoCupcake')">Fazer Novo Pedido</a>
     </div>
@@ -113,22 +113,24 @@
         alert("Nenhum pedido encontrado. Redirecionando para a loja...");
         window.location.href = 'index.html';
     } else {
+        const c = pedidoSalvo.cliente;
         document.getElementById('info-cliente').innerHTML = `
-            <p><strong>Nome:</strong> ${pedidoSalvo.cliente.nome}</p>
-            <p><strong>Telefone:</strong> ${pedidoSalvo.cliente.telefone}</p>
-            <p><strong>Endereço:</strong> ${pedidoSalvo.cliente.endereco}</p>
-            <p><strong>Forma de Pagamento:</strong> ${pedidoSalvo.cliente.pagamento}</p>
+            <p><strong>Nome:</strong> ${c.nome}</p>
+            <p><strong>E-mail:</strong> ${c.email}</p>
+            <p><strong>Telefone:</strong> ${c.telefone}</p>
+            <p><strong>Endereço:</strong> ${c.rua}, nº ${c.numero} - Bairro ${c.bairro} (CEP: ${c.cep})</p>
             <p><strong>Data/Hora:</strong> ${pedidoSalvo.data}</p>
         `;
 
         const tbody = document.getElementById('lista-produtos');
         pedidoSalvo.itens.forEach(item => {
+            const subtotal = item.preco * item.quantidade;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${item.nome}</td>
                 <td>${item.quantidade}</td>
                 <td class="direita">R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
-                <td class="direita">R$ ${item.subtotal.toFixed(2).replace('.', ',')}</td>
+                <td class="direita">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
             `;
             tbody.appendChild(tr);
         });
@@ -142,14 +144,24 @@
         pedidoSalvo.protocolo = protocolo;
         pedidoSalvo.status = 'CONFIRMADO';
 
+        // Envia para o servidor Python (app.py) se estiver ativo
         fetch('/salvar-pedido', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pedidoSalvo)
+            body: JSON.stringify({
+                cliente: {
+                    nome: pedidoSalvo.cliente.nome,
+                    telefone: pedidoSalvo.cliente.telefone,
+                    endereco: `${pedidoSalvo.cliente.rua}, ${pedidoSalvo.cliente.numero} - ${pedidoSalvo.cliente.bairro} (CEP: ${pedidoSalvo.cliente.cep})`,
+                    pagamento: 'A combinar / Na entrega'
+                },
+                total: pedidoSalvo.total,
+                protocolo: protocolo
+            })
         })
-        .then(response => response.json())
-        .then(data => console.log("Servidor:", data))
-        .catch(error => console.warn("Modo demonstração local:", error))
+        .then(res => res.json())
+        .then(data => console.log("Salvo no banco:", data))
+        .catch(() => console.warn("Modo visualização sem servidor ativo."))
         .finally(() => {
             document.getElementById('nome-sucesso').innerText = pedidoSalvo.cliente.nome;
             document.getElementById('numero-protocolo').innerText = `Protocolo do Pedido: #${protocolo}`;
